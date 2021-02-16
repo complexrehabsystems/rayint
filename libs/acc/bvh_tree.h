@@ -240,6 +240,8 @@ BVHTree<IdxType, Vec3fType>::bsplit(typename Node::ID node_id,
     assert(l == r);
     std::size_t m = bin[(l&r) - node.first] >= sidx ? (l&r) : (l&r) + 1;
 
+    if (m == node.first || m == node.last) return std::make_pair(NAI, NAI);
+    
     node.left = create_node(node.first, m);
     node.right = create_node(m, node.last);
     for (std::size_t idx = 0; idx < NUM_BINS; ++idx) {
@@ -258,6 +260,9 @@ std::pair<typename BVHTree<IdxType, Vec3fType>::Node::ID, typename BVHTree<IdxTy
 BVHTree<IdxType, Vec3fType>::ssplit(typename Node::ID node_id, std::vector<AABB> const & aabbs) {
     Node & node = nodes[node_id];
     IdxType n = node.last - node.first;
+    
+    if(n == 0)
+        std::cout << "ERROR!" << std::endl;
 
     float min_cost = std::numeric_limits<float>::infinity();
     std::pair<char, IdxType> split;
